@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Rahul Chidambaranathan</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080a0f;--bg2:#0d101a;--card:#111520;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.1);
+  --a:#00d4ff;--b:#7b61ff;--c:#00ffb3;--gold:#ffd166;--coral:#ff7b7b;
+  --text:#dde4f0;--muted:#6b7694;--r:16px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none}
+#cursor{position:fixed;width:12px;height:12px;background:var(--a);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s;mix-blend-mode:screen}
+#cursor-ring{position:fixed;width:36px;height:36px;border:1.5px solid rgba(0,212,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .12s ease}
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;height:66px;background:rgba(8,10,15,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:.04em;background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:2px;align-items:center;flex-wrap:wrap}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.78rem;font-weight:500;padding:5px 9px;border-radius:8px;transition:.25s;white-space:nowrap}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.05)}
+.lang-pill{display:flex;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:50px;padding:4px;gap:3px;margin-left:.6rem;flex-shrink:0}
+.lb{cursor:pointer;padding:5px 12px;border-radius:50px;font-size:.75rem;font-weight:700;letter-spacing:.06em;border:none;background:transparent;color:var(--muted);transition:.25s}
+.lb.on{background:linear-gradient(135deg,var(--a),var(--b));color:#fff}
+
+/* ── HERO — photo LEFT, text RIGHT ── */
+.hero{
+  min-height:100vh;display:flex;align-items:center;
+  padding:100px 5vw 80px;position:relative;z-index:1;
+}
+.hero-inner{
+  max-width:1020px;margin:0 auto;width:100%;
+  display:grid;grid-template-columns:380px 1fr;
+  align-items:center;gap:3rem;
+}
+.hero-text{text-align:left;padding-left:0;padding-top:0;padding-bottom:0}
+.hero-photo-col{
+  display:flex;justify-content:center;align-items:center;
+  flex-shrink:0;width:100%;
+}
+.hero-photo-frame{
+  width:340px;height:340px;
+  border-radius:50%;
+  position:relative;flex-shrink:0;
+}
+.hero-photo-frame::before{
+  content:'';position:absolute;inset:-4px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--a),var(--b),var(--c));
+  z-index:0;animation:spinRing 6s linear infinite;
+}
+@keyframes spinRing{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.hero-photo-frame::after{
+  content:'';position:absolute;inset:4px;
+  border-radius:50%;background:var(--bg);z-index:1;
+}
+.hero-photo-frame img{
+  position:absolute;inset:8px;
+  width:calc(100% - 16px);height:calc(100% - 16px);
+  border-radius:50%;object-fit:cover;object-position:center top;
+  z-index:2;display:block;
+}
+@media(max-width:760px){
+  .hero-inner{grid-template-columns:1fr;text-align:center;padding:80px 5vw 40px;gap:2rem}
+  .hero-text{text-align:center;order:2}
+  .hero-photo-col{order:1;margin:0 auto}
+  .hero-photo-frame{width:200px;height:200px}
+  .nav-links a{display:none}
+  .scroll-hint{align-items:center}
+  .hero h1{white-space:normal;font-size:clamp(1.8rem,8vw,2.8rem)}
+}
+@media(min-width:761px) and (max-width:1024px){
+  .hero-inner{grid-template-columns:300px 1fr;gap:2rem}
+  .hero-photo-frame{width:270px;height:270px}
+}
+
+.hero-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:50px;padding:6px 18px;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--a);margin-bottom:1.75rem;animation:fadeUp .8s ease both}
+.hero-chip::before{content:'';width:7px;height:7px;background:var(--a);border-radius:50%;animation:blink 1.8s ease infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+.hero h1{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(1.8rem,3.2vw,3.2rem);
+  line-height:1.1;letter-spacing:-.02em;color:#fff;
+  margin-bottom:.6rem;animation:fadeUp .8s .15s ease both;
+  white-space:nowrap;overflow:hidden;
+}
+.grad{background:linear-gradient(135deg,var(--a) 0%,var(--b) 50%,var(--c) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200% auto;animation:gradS 4s ease infinite}
+@keyframes gradS{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+/* Interactive hero summary */
+.hero-summary{margin-bottom:2rem;animation:fadeUp .8s .3s ease both}
+.hero-tag-line{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:.85rem}
+.hero-kw{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 13px;border-radius:50px;
+  font-size:.78rem;font-weight:600;letter-spacing:.02em;
+  border:1px solid;cursor:default;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .4s ease,transform .4s ease,box-shadow .25s,background .25s;
+}
+.hero-kw.vis{opacity:1;transform:none}
+.hero-kw.c-a{color:var(--a);border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.08)}
+.hero-kw.c-b{color:var(--b);border-color:rgba(123,97,255,.3);background:rgba(123,97,255,.08)}
+.hero-kw.c-c{color:var(--c);border-color:rgba(0,255,179,.3);background:rgba(0,255,179,.07)}
+.hero-kw.c-g{color:var(--gold);border-color:rgba(255,209,102,.3);background:rgba(255,209,102,.07)}
+.hero-kw:hover{box-shadow:0 0 12px currentColor;transform:translateY(-2px)!important}
+.hero-tagline-text{
+  font-size:.88rem;color:var(--muted);line-height:1.7;
+  opacity:0;transform:translateY(8px);
+  transition:opacity .5s .8s ease,transform .5s .8s ease;
+  max-width:440px;
+}
+.hero-tagline-text.vis{opacity:1;transform:none}
+
+.hero-btns{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:2rem;animation:fadeUp .8s .45s ease both}
+.btn-p{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--a),var(--b));color:#fff;text-decoration:none;font-weight:600;font-size:.88rem;padding:11px 24px;border-radius:50px;border:none;cursor:pointer;transition:.25s;position:relative;overflow:hidden}
+.btn-p::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.15);transform:translateX(-100%);transition:.4s}
+.btn-p:hover::after{transform:translateX(0)}
+.btn-o{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--text);text-decoration:none;font-weight:500;font-size:.88rem;padding:10px 22px;border-radius:50px;border:1px solid var(--border);transition:.25s}
+.btn-o:hover{border-color:var(--a);color:var(--a)}
+.scroll-hint{display:flex;flex-direction:column;align-items:flex-start;gap:8px;color:var(--muted);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;animation:fadeUp .8s .7s ease both;margin-top:.5rem}
+.scroll-line{width:1px;height:40px;background:linear-gradient(var(--a),transparent);animation:sp 2s ease infinite}
+@keyframes sp{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SECTIONS ── */
+section{padding:90px 5vw;position:relative;z-index:1}
+.si{max-width:940px;margin:0 auto}
+.s-label{font-size:.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--a);margin-bottom:.4rem}
+.s-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,3.5vw,2.6rem);color:#fff;margin-bottom:2.5rem;line-height:1.15}
+.s-title em{color:var(--a);font-style:normal}
+.s-div{width:40px;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--a),var(--b));margin-bottom:2.5rem}
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+.bg-alt{background:rgba(13,16,26,.65)}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:.85rem;margin-bottom:3.5rem}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem 1.3rem;text-align:center;transition:.3s;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,.06),transparent);opacity:0;transition:.3s}
+.sc:hover::before{opacity:1}
+.sc:hover{border-color:rgba(0,212,255,.25);transform:translateY(-3px)}
+.sn{font-family:'Syne',sans-serif;font-weight:800;font-size:1.85rem;background:linear-gradient(135deg,var(--a),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sl{font-size:.74rem;color:var(--muted);margin-top:.2rem;line-height:1.35}
+
+/* ── EXP TABS ── */
+.exp-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.75rem}
+.exp-tab{cursor:pointer;padding:7px 16px;border-radius:50px;font-size:.8rem;font-weight:500;background:var(--card);border:1px solid var(--border);color:var(--muted);transition:.25s}
+.exp-tab.on{background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(123,97,255,.15));border-color:rgba(0,212,255,.35);color:#fff}
+.exp-pane{display:none}
+.exp-pane.on{display:block;animation:fadeUp .4s ease}
+.exp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.6rem 1.8rem;position:relative;overflow:hidden}
+.exp-card::after{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(var(--a),var(--b));border-radius:2px}
+.exp-company{font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;color:#fff}
+.exp-role{font-size:.84rem;margin:.3rem 0 .8rem;background:linear-gradient(90deg,var(--a),var(--c));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:500}
+.exp-date{display:inline-block;font-size:.72rem;color:var(--muted);font-weight:600;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:50px;padding:3px 11px;margin-bottom:.9rem}
+.blist{list-style:none;display:flex;flex-direction:column;gap:6px}
+.blist li{font-size:.86rem;color:var(--muted);padding-left:1.15rem;position:relative;line-height:1.6}
+.blist li::before{content:'→';position:absolute;left:0;color:var(--a);font-size:.72rem;top:.05em}
+
+/* ── MODAL LIGHTBOX ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--border2);border-radius:var(--r);padding:1.5rem;max-width:860px;width:92vw;max-height:90vh;overflow:auto;position:relative}
+.modal-close{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.08);border:none;color:var(--text);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:.2s}
+.modal-close:hover{background:rgba(255,255,255,.18)}
+.modal-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:#fff;margin-bottom:1rem;padding-right:2rem}
+.modal-img{width:100%;border-radius:10px;display:block}
+
+/* ── PROJECTS ── */
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1.1rem}
+.p-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.6rem;transition:.3s;position:relative;overflow:hidden;cursor:default;display:flex;flex-direction:column}
+.p-card::before{content:'';position:absolute;top:-60px;right:-60px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,.07),transparent 70%);transition:.4s;pointer-events:none}
+.p-card:hover::before{transform:scale(1.5)}
+.p-card:hover{border-color:rgba(0,212,255,.25);transform:translateY(-3px)}
+.p-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:1rem}
+.p-badge{display:inline-block;font-size:.66rem;font-weight:700;padding:3px 10px;border-radius:50px;letter-spacing:.05em;margin-bottom:.7rem}
+.p-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.93rem;color:#fff;margin-bottom:.8rem;line-height:1.4}
+.p-result{margin-top:auto;padding:.65rem .9rem;background:rgba(0,255,179,.05);border:1px solid rgba(0,255,179,.15);border-radius:10px;font-size:.78rem;color:var(--c);font-weight:500;display:flex;align-items:center;gap:8px;margin-top:.85rem}
+.p-result::before{content:'✦';font-size:.6rem}
+
+/* ── SKILLS ── */
+.skill-section-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem}
+@media(max-width:640px){.skill-section-grid{grid-template-columns:1fr}}
+.skill-cat-title{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--a);margin-bottom:.85rem}
+.skill-cat-title i{margin-right:6px;font-size:.75rem}
+.skill-items{display:flex;flex-direction:column;gap:.55rem}
+.skill-row{display:flex;align-items:center;justify-content:space-between;gap:.75rem;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.6rem .9rem;transition:.25s}
+.skill-row:hover{border-color:rgba(0,212,255,.22);transform:translateX(4px)}
+.skill-row-name{font-size:.84rem;color:var(--text);font-weight:500}
+.skill-dots{display:flex;gap:4px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border2);transition:.3s}
+.dot.on.pro{background:var(--c)}
+.dot.on.alt{background:var(--b)}
+.cert-wrap{display:flex;flex-wrap:wrap;gap:.6rem}
+.cert-pill{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:500;padding:6px 14px;border-radius:50px;background:rgba(123,97,255,.08);color:var(--b);border:1px solid rgba(123,97,255,.2);transition:.25s;cursor:pointer}
+.cert-pill:hover{background:rgba(123,97,255,.18);transform:translateY(-2px)}
+.tags-title{font-size:.73rem;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.85rem}
+.tag{font-size:.76rem;padding:4px 11px;border-radius:7px;background:var(--card);color:var(--muted);border:1px solid var(--border);transition:.25s;cursor:default}
+.tag:hover{border-color:var(--a);color:var(--a);transform:translateY(-2px)}
+
+/* ── EDUCATION ── */
+.edu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1.1rem}
+.e-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.6rem;transition:.3s;position:relative}
+.e-card:hover{border-color:rgba(123,97,255,.3);transform:translateY(-3px)}
+.e-badge{display:inline-block;background:rgba(123,97,255,.12);color:var(--b);border:1px solid rgba(123,97,255,.25);font-size:.67rem;font-weight:700;padding:3px 11px;border-radius:50px;letter-spacing:.05em;margin-bottom:.8rem}
+.e-degree{font-family:'Syne',sans-serif;font-weight:700;font-size:.97rem;color:#fff;margin-bottom:.3rem;line-height:1.35}
+.e-focus{font-size:.8rem;color:var(--a);margin-bottom:.45rem}
+.e-school{font-size:.83rem;color:var(--muted);margin-bottom:.4rem}
+.e-date{font-size:.7rem;color:var(--muted);font-weight:600}
+
+/* ── PUBLICATIONS ── */
+.pub-list{display:flex;flex-direction:column;gap:1rem}
+.pub-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.35rem 1.6rem;display:flex;gap:1.1rem;align-items:flex-start;transition:.3s}
+.pub-card:hover{border-color:rgba(0,212,255,.2);transform:translateX(4px)}
+.pub-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;margin-top:.15rem}
+.pub-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;color:#fff;margin-bottom:.3rem;line-height:1.35}
+.pub-meta{font-size:.78rem;color:var(--muted);line-height:1.5}
+.pub-footer{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin-top:.6rem}
+.pub-year{font-size:.7rem;font-weight:700;background:rgba(0,212,255,.08);color:var(--a);border:1px solid rgba(0,212,255,.2);padding:2px 9px;border-radius:50px;white-space:nowrap}
+.pub-link{display:inline-flex;align-items:center;gap:5px;font-size:.73rem;font-weight:600;padding:4px 12px;border-radius:50px;text-decoration:none;transition:.25s;border:1px solid rgba(0,212,255,.2);color:var(--a);background:rgba(0,212,255,.06);cursor:pointer}
+.pub-link:hover{background:rgba(0,212,255,.14);border-color:rgba(0,212,255,.5)}
+.pub-link.gold{border-color:rgba(255,209,102,.25);color:var(--gold);background:rgba(255,209,102,.07)}
+.pub-link.gold:hover{background:rgba(255,209,102,.16)}
+
+/* ── CONFERENCES (separate section) ── */
+.conf-list{display:flex;flex-direction:column;gap:1rem}
+.conf-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.35rem 1.6rem;display:flex;gap:1.1rem;align-items:flex-start;transition:.3s;position:relative;overflow:hidden}
+.conf-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(var(--b),var(--c));border-radius:2px}
+.conf-card:hover{border-color:rgba(123,97,255,.25);transform:translateX(4px)}
+.conf-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;margin-top:.15rem}
+.conf-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;color:#fff;margin-bottom:.3rem;line-height:1.35}
+.conf-meta{font-size:.78rem;color:var(--muted);line-height:1.55}
+.conf-footer{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin-top:.6rem}
+.conf-year{font-size:.7rem;font-weight:700;background:rgba(123,97,255,.1);color:var(--b);border:1px solid rgba(123,97,255,.2);padding:2px 9px;border-radius:50px;white-space:nowrap}
+.conf-badge{font-size:.7rem;font-weight:700;background:rgba(0,255,179,.07);color:var(--c);border:1px solid rgba(0,255,179,.2);padding:2px 9px;border-radius:50px}
+
+/* ── AWARDS ── */
+.awards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.85rem}
+.award-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.35rem;display:flex;align-items:flex-start;gap:.85rem;transition:.3s}
+.award-card:hover{border-color:rgba(255,209,102,.2);transform:translateY(-2px)}
+.award-icon{font-size:1.1rem;flex-shrink:0;padding-top:.1rem}
+.award-title{font-size:.84rem;font-weight:600;color:var(--text);line-height:1.35}
+.award-sub{font-size:.74rem;color:var(--muted);margin-top:.2rem}
+.award-year{font-size:.68rem;font-weight:700;color:var(--gold);margin-top:.3rem}
+
+/* ── TRAININGS ── */
+.training-list{display:flex;flex-direction:column;gap:.8rem}
+.tr-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.4rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;transition:.3s}
+.tr-card:hover{border-color:rgba(0,255,179,.2);transform:translateX(4px)}
+.tr-title{font-size:.85rem;font-weight:600;color:var(--text);line-height:1.35}
+.tr-org{font-size:.76rem;color:var(--muted);margin-top:.2rem}
+.tr-date{font-size:.71rem;font-weight:700;color:var(--c);white-space:nowrap;padding-top:.15rem;flex-shrink:0}
+
+/* ── LANG SPOKEN ── */
+.lang-spoken{display:flex;gap:.85rem;flex-wrap:wrap;margin-top:1.75rem}
+.lp{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:50px;padding:9px 18px;transition:.25s}
+.lp:hover{border-color:var(--a);transform:translateY(-2px)}
+.lp-flag{font-size:1.2rem}
+.lp-name{font-size:.85rem;font-weight:500}
+.lp-lvl{font-size:.68rem;font-weight:700;background:rgba(0,212,255,.1);color:var(--a);border:1px solid rgba(0,212,255,.2);padding:2px 8px;border-radius:50px}
+
+/* ── CONTACT ── */
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem}
+.c-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem 1.65rem;display:flex;align-items:center;gap:14px;text-decoration:none;transition:.3s;position:relative;overflow:hidden}
+.c-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--a),var(--b));transform:scaleX(0);transition:.3s;transform-origin:left}
+.c-card:hover::after{transform:scaleX(1)}
+.c-card:hover{border-color:rgba(0,212,255,.2);transform:translateY(-3px)}
+.c-icon{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,rgba(0,212,255,.12),rgba(123,97,255,.12));display:flex;align-items:center;justify-content:center;color:var(--a);font-size:.95rem;flex-shrink:0}
+.c-label{font-size:.7rem;color:var(--muted);margin-bottom:2px}
+.c-val{font-size:.85rem;color:var(--text);font-weight:500}
+
+footer{text-align:center;padding:2.5rem 6vw;border-top:1px solid var(--border);font-size:.78rem;color:var(--muted);position:relative;z-index:1}
+
+[data-l]{display:none}[data-l].on{display:block}
+[data-li]{display:none}[data-li].on{display:inline}
+</style>
+</head>
+<body>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()"><i class="fa fa-times"></i></button>
+    <div class="modal-title" id="modal-title"></div>
+    <img class="modal-img" id="modal-img" src="" alt="proof"/>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <span class="logo">RC</span>
+  <div class="nav-links">
+    <a href="#experience"><span data-li="en" class="on">Experience</span><span data-li="de">Erfahrung</span></a>
+    <a href="#projects"><span data-li="en" class="on">Projects</span><span data-li="de">Projekte</span></a>
+    <a href="#skills"><span data-li="en" class="on">Skills</span><span data-li="de">Kompetenzen</span></a>
+    <a href="#education"><span data-li="en" class="on">Education</span><span data-li="de">Ausbildung</span></a>
+    <a href="#research"><span data-li="en" class="on">Research</span><span data-li="de">Forschung</span></a>
+    <a href="#awards"><span data-li="en" class="on">Awards</span><span data-li="de">Auszeichnungen</span></a>
+    <a href="#contact"><span data-li="en" class="on">Contact</span><span data-li="de">Kontakt</span></a>
+  </div>
+  <div class="lang-pill">
+    <button class="lb on" id="btn-en" onclick="setLang('en')">EN</button>
+    <button class="lb" id="btn-de" onclick="setLang('de')">DE</button>
+  </div>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <!-- Left: profile photo -->
+    <div class="hero-photo-col">
+      <div class="hero-photo-frame">
+        <img src="assets/img/profile.jpg" alt="Rahul Chidambaranathan"/>
+      </div>
+    </div>
+
+    <!-- Right: text -->
+    <div class="hero-text">
+      <div class="hero-chip">
+        <span data-li="en" class="on">Available · Open to new opportunities</span>
+        <span data-li="de">Verfügbar · Offen für neue Möglichkeiten</span>
+      </div>
+      <h1><span class="grad">Rahul</span><br/>Chidambaranathan</h1>
+
+      <!-- Interactive summary — keyword highlights that animate in -->
+      <div class="hero-summary" id="hero-tags-wrap">
+        <div class="hero-tag-line" id="hero-tag-line"></div>
+        <p class="hero-tagline-text" id="hero-tagline-sub"></p>
+      </div>
+
+      <div class="hero-btns">
+        <a class="btn-p" href="#experience">
+          <span data-li="en" class="on">View My Work <i class="fa fa-arrow-down"></i></span>
+          <span data-li="de">Meine Arbeit <i class="fa fa-arrow-down"></i></span>
+        </a>
+        <a class="btn-o" href="mailto:rahulchidambaranathan@gmail.com">
+          <i class="fa fa-envelope"></i>
+          <span data-li="en" class="on">Get in Touch</span>
+          <span data-li="de">Kontakt aufnehmen</span>
+        </a>
+      </div>
+      <div class="scroll-hint">
+        <span data-li="en" class="on">scroll</span><span data-li="de">scrollen</span>
+        <div class="scroll-line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section style="padding:50px 5vw;position:relative;z-index:1">
+  <div class="si">
+    <div class="stats-row reveal">
+      <div class="sc"><div class="sn" data-count="3">0</div><div class="sl"><span data-li="en" class="on">Years of Industrial Experience</span><span data-li="de">Jahre Industrieerfahrung</span></div></div>
+      <div class="sc"><div class="sn" data-count="3">0</div><div class="sl"><span data-li="en" class="on">Publications &amp; Patents</span><span data-li="de">Publikationen &amp; Patente</span></div></div>
+      <div class="sc"><div class="sn" style="font-size:1.5rem" data-count="36" data-suffix="%">0</div><div class="sl"><span data-li="en" class="on">Fuel Reduction Achieved</span><span data-li="de">Kraftstoffreduktion</span></div></div>
+      <div class="sc"><div class="sn" style="font-size:1.5rem" data-count="1.5" data-suffix="dB">0</div><div class="sl"><span data-li="en" class="on">Noise Reduction (PMSM)</span><span data-li="de">Geräuschreduzierung</span></div></div>
+      <div class="sc"><div class="sn" data-count="8">0</div><div class="sl"><span data-li="en" class="on">Certifications</span><span data-li="de">Zertifizierungen</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ EXPERIENCE ═══════════ -->
+<section id="experience" class="bg-alt">
+  <div class="si">
+    <p class="s-label reveal"><span data-li="en" class="on">Career</span><span data-li="de">Karriere</span></p>
+    <h2 class="s-title reveal"><span data-li="en" class="on">Work <em>Experience</em></span><span data-li="de">Berufs<em>erfahrung</em></span></h2>
+    <div class="s-div reveal"></div>
+    <div class="exp-tabs reveal">
+      <button class="exp-tab on" onclick="showTab(0)">Webasto Group</button>
+      <button class="exp-tab" onclick="showTab(1)">Bharat Electronics</button>
+      <button class="exp-tab" onclick="showTab(2)">Sri Balaji Drives</button>
+      <button class="exp-tab" onclick="showTab(3)">KaRaT <span style="font-size:.68rem;opacity:.7">(Voluntary)</span></button>
+    </div>
+
+    <!-- Webasto -->
+    <div class="exp-pane on reveal" id="pane-0">
+      <div class="exp-card">
+        <div class="exp-company">Webasto Group, Stockdorf, Germany</div>
+        <div class="exp-role"><span data-li="en" class="on">Development, Testing &amp; Validation — Electric Drive Systems &amp; Roof Mechatronics</span><span data-li="de">Entwicklung, Test &amp; Validierung — Elektrische Antriebssysteme &amp; Roof Mechatronics</span></div>
+        <div class="exp-date">Apr 2024 – Mar 2026</div>
+        <ul class="blist">
+          <li><span data-l="en" class="on">Conducted predevelopment of electric drive systems for automotive sunroof and rollerblinds, evaluating BLDC, PMSM, DC, and axial flux machines; collaborated with customers across Europe, India, and China.</span><span data-l="de">Vorentwicklung elektrischer Antriebssysteme für Schiebedach- und Rollladenapplikationen, inkl. Bewertung von BLDC, PMSM, DC und Axialflussmaschinen in <strong style="color:var(--text)">12V- und 48V-Architekturen</strong>; Zusammenarbeit mit Kunden in Europa, Indien und China.</span></li>
+          <li><span data-l="en" class="on">Supported A-sample and B-sample prototype development; conducted functional testing, benchmarking, and validation on laboratory test benches.</span><span data-l="de">Unterstützung bei der A/B-Muster-Prototypenentwicklung; Durchführung von Funktionstests, Benchmarking und Validierung auf Prüfständen.</span></li>
+          <li><span data-l="en" class="on">Conducted electrical performance, vibration, and acoustic measurements to analyze motor behavior and evaluate the impact of control strategies on NVH characteristics.</span><span data-l="de">Elektrische Leistungs-, Schwingungs- und Akustikmessungen zur Analyse des Motorverhaltens und Bewertung des Einflusses von Regelstrategien auf NVH-Eigenschaften.</span></li>
+          <li><span data-l="en" class="on">Developed and implemented sensor-based and sensorless FOC algorithms for brushless machines using MATLAB/Simulink and dSPACE, including PI current/speed controller design and optimization.</span><span data-l="de">Entwicklung und Implementierung sensor- und sensorloser FOC-Algorithmen in MATLAB/Simulink und dSPACE, inkl. PI-Strom-/Drehzahlreglerdesign und -optimierung.</span></li>
+          <li><span data-l="en" class="on">Performed electromagnetic simulations using JMAG to analyze and optimize motor and actuator designs.</span><span data-l="de">Elektromagnetische Simulationen mit JMAG zur Optimierung von Motor- und Aktordesigns.</span></li>
+          <li><span data-l="en" class="on">Performed ECU software flashing, debugging, and optimization for motor control using NXP and Renesas microcontroller platforms.</span><span data-l="de">ECU-Software-Flashing, Debugging und Optimierung für Motorsteuerungsanwendungen auf NXP- und Renesas-Plattformen.</span></li>
+          <li><span data-l="en" class="on">Executed diagnostics and communication analysis using Vector CANoe, including CAPL scripting for testing, validation, and troubleshooting of ECU functionalities.</span><span data-l="de">Diagnose und Kommunikationsanalyse mit Vector CANoe inkl. CAPL-Skripte für Tests, Validierung und Fehlersuche.</span></li>
+          <li><span data-l="en" class="on">Contributed to Dual Clutch Actuator drive concept development; supported electromagnetic clutch prototype build, testing, and control strategy development with cross-functional teams.</span><span data-l="de">Mitwirkung bei Doppelkupplungsaktuator-Antriebskonzepten; Unterstützung beim Prototypenaufbau und der Entwicklung von Regelstrategien im interdisziplinären Team.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- BEL — date corrected: Dec 2021 – Jun 2022 -->
+    <div class="exp-pane" id="pane-1">
+      <div class="exp-card">
+        <div class="exp-company">Bharat Electronics Limited, Bangalore, India</div>
+        <div class="exp-role"><span data-li="en" class="on">Test Engineer — Electronic Systems</span><span data-li="de">Testingenieur — Elektronische Systeme</span></div>
+        <div class="exp-date">Dec 2021 – Jun 2022</div>
+        <ul class="blist">
+          <li><span data-l="en" class="on">Conducted functional, system, and integration tests according to product specifications and test requirements.</span><span data-l="de">Durchführung von Funktions-, System- und Integrationstests gemäß Produktspezifikationen und Testanforderungen.</span></li>
+          <li><span data-l="en" class="on">Analyzed test data and performed structured fault analysis to support validation processes.</span><span data-l="de">Analyse von Testdaten sowie strukturierte Fehleranalyse zur Unterstützung von Validierungsprozessen.</span></li>
+          <li><span data-l="en" class="on">Created test reports, technical documentation, and presentations for internal stakeholders.</span><span data-l="de">Erstellung von Testberichten, technischer Dokumentation und Präsentationen für interne Stakeholder.</span></li>
+          <li><span data-l="en" class="on">Collaborated with development, quality, and supplier teams to ensure product release.</span><span data-l="de">Zusammenarbeit mit Entwicklungs-, Qualitäts- und Lieferantenteams zur Sicherstellung der Produktfreigabe.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Sri Balaji -->
+    <div class="exp-pane" id="pane-2">
+      <div class="exp-card">
+        <div class="exp-company">Sri Balaji Drives, India</div>
+        <div class="exp-role"><span data-li="en" class="on">Junior Engineer — Industrial Automation</span><span data-li="de">Junior-Ingenieur — Industrieautomation</span></div>
+        <div class="exp-date">Jun 2021 – Dec 2021</div>
+        <ul class="blist">
+          <li><span data-l="en" class="on">Commissioning of control panels for industrial automation systems.</span><span data-l="de">Inbetriebnahme von Schaltanlagen für industrielle Automatisierungssysteme.</span></li>
+          <li><span data-l="en" class="on">PLC ladder programming for process automation.</span><span data-l="de">SPS-Leiterdiagramm-Programmierung für die Prozessautomation.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- KaRaT voluntary -->
+    <div class="exp-pane" id="pane-3">
+      <div class="exp-card">
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:.3rem">
+          <div class="exp-company">Kaiserslautern Racing Team (KaRaT), Germany</div>
+          <span style="font-size:.7rem;font-weight:700;background:rgba(0,255,179,.1);color:var(--c);border:1px solid rgba(0,255,179,.2);border-radius:50px;padding:3px 10px;">🤝 <span data-li="en" class="on">Voluntary</span><span data-li="de">Ehrenamtlich</span></span>
+        </div>
+        <div class="exp-role"><span data-li="en" class="on">Technical Team Member — Composites / Chassis</span><span data-li="de">Technisches Teammitglied — Verbundwerkstoffe / Chassis</span></div>
+        <div class="exp-date">Dec 2022 – Mar 2023</div>
+        <ul class="blist">
+          <li><span data-l="en" class="on">Participated in the manufacturing of a Formula Student monocoque chassis using pre-impregnated carbon fiber with advanced resins.</span><span data-l="de">Mitwirkung bei der Fertigung eines Formula-Student-Monocoque-Chassis aus vorimprägnierten Carbonfasern mit fortschrittlichen Harzsystemen.</span></li>
+          <li><span data-l="en" class="on">Applied vacuum bagging techniques to densify fibers and eliminate voids, ensuring structural integrity of composite parts.</span><span data-l="de">Anwendung von Vakuumsacktechniken zur Faserverdichtung und Hohlraumelimination für optimale Strukturintegrität.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PROJECTS ═══════════ -->
+<section id="projects">
+  <div class="si">
+    <p class="s-label reveal"><span data-li="en" class="on">Portfolio</span><span data-li="de">Portfolio</span></p>
+    <h2 class="s-title reveal"><span data-li="en" class="on">Key <em>Projects</em></span><span data-li="de">Wichtige <em>Projekte</em></span></h2>
+    <div class="s-div reveal"></div>
+    <div class="proj-grid">
+
+      <!-- Master Thesis — date: Oct 2024–Mar 2026 -->
+      <div class="p-card reveal">
+        <div class="p-icon" style="background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(123,97,255,.15));color:var(--a)"><i class="fa fa-wave-square"></i></div>
+        <div class="p-badge" style="background:rgba(0,212,255,.1);color:var(--a);border:1px solid rgba(0,212,255,.2)">
+          <span data-li="en" class="on">Master's Thesis · Oct 2024 – Mar 2026</span><span data-li="de">Masterarbeit · Okt 2024 – Mär 2026</span>
+        </div>
+        <div class="p-title"><span data-l="en" class="on">Noise Minimization of PMSM via Advanced Control Techniques</span><span data-l="de">Geräuschminimierung von PMSM durch fortschrittliche Regelungstechniken</span></div>
+        <ul class="blist">
+          <li><span data-l="en" class="on">Developed and deployed two control strategies — Flux Map-Based FOC and Harmonic Current Injection (HCI) — in MATLAB/Simulink and validated in real time on dSPACE to reduce torque ripple in PMSM sunroof drives.</span><span data-l="de">Entwicklung und Echtzeit-Validierung von Flux Map-basierter FOC und Harmonic Current Injection (HCI) in MATLAB/Simulink und dSPACE zur Reduzierung des Drehmomentrippels in PMSM-Schiebedachantrieben.</span></li>
+          <li><span data-l="en" class="on">Flux Map-Based FOC achieved up to 55% torque ripple reduction and measurably lowered radial and tangential vibration at motor mounts, improving structure-borne noise performance.</span><span data-l="de">Flux Map-basierte FOC erzielte bis zu 55% Drehmomentrippelreduktion und senkte messbar Radial- und Tangentialvibrationen an den Motorlagern.</span></li>
+          <li><span data-l="en" class="on">HCI achieved up to 42% torque ripple reduction and delivered superior airborne noise improvement by targeting 6th and 12th current harmonics, reducing psychoacoustic roughness and tonal prominence.</span><span data-l="de">HCI erzielte bis zu 42% Drehmomentrippelreduktion und verbesserte den Luftschall signifikant durch gezielte Eliminierung der 6. und 12. Stromharmonischen.</span></li>
+          <li><span data-l="en" class="on">Evaluated performance using psychoacoustic metrics (SPL, roughness, tonal prominence) and vibration analysis, validating the effectiveness of both strategies across multiple operating conditions.</span><span data-l="de">Leistungsbewertung anhand psychoakustischer Metriken (SPL, Rauheit, Tonalität) und Vibrationsanalyse zur Validierung beider Strategien unter verschiedenen Betriebsbedingungen.</span></li>
+        </ul>
+        <div class="p-result"><span data-li="en" class="on">Up to 55% torque ripple reduction · 1.5 dB airborne noise reduction · Improved NVH across airborne &amp; structure-borne paths</span><span data-li="de">Bis zu 55% Drehmomentrippelreduktion · 1,5 dB Luftschallreduzierung · Verbessertes NVH auf Luft- und Körperschallpfaden</span></div>
+      </div>
+
+      <!-- P2 HEV -->
+      <div class="p-card reveal">
+        <div class="p-icon" style="background:linear-gradient(135deg,rgba(0,255,179,.12),rgba(0,212,255,.08));color:var(--c)"><i class="fa fa-bolt"></i></div>
+        <div class="p-badge" style="background:rgba(255,209,102,.1);color:var(--gold);border:1px solid rgba(255,209,102,.2)">
+          <span data-li="en" class="on">🏆 1st Place · May–Oct 2023</span><span data-li="de">🏆 1. Platz · Mai–Okt 2023</span>
+        </div>
+        <div class="p-title"><span data-l="en" class="on">Energy Management System for P2 Hybrid Electric Vehicle</span><span data-l="de">Energiemanagementsystem für P2 Hybrid-Elektrofahrzeug</span></div>
+        <ul class="blist">
+          <li><span data-l="en" class="on">Modelled a Rule-Based Strategy (RBS) EMS in MATLAB/Simulink for a Mercedes-Benz A 170 CDI parallel mild-hybrid, achieving 27.3% (NEDC) and 30.0% (FTP-75) fuel savings vs. a conventional vehicle.</span><span data-l="de">Regelbasiertes EMS für einen Mercedes-Benz A 170 CDI Parallel-Mild-Hybrid in MATLAB/Simulink — 27,3% (NEDC) und 30,0% (FTP-75) Kraftstoffeinsparung gegenüber einem konventionellen Fahrzeug.</span></li>
+          <li><span data-l="en" class="on">Optimized the EMS using Dynamic Programming (DP), improving fuel efficiency to 33.3% (NEDC) and 35.9% (FTP-75) — approximately 6% gain over the rule-based approach.</span><span data-l="de">Optimierung des EMS mittels Dynamischer Programmierung (DP): 33,3% (NEDC) und 35,9% (FTP-75) Kraftstoffeinsparung — ca. 6% Verbesserung gegenüber dem regelbasierten Ansatz.</span></li>
+          <li><span data-l="en" class="on">Both strategies sustained battery State of Charge (SoC) at cycle end, confirming real-world practicality and charge-sustaining capability.</span><span data-l="de">Beide Strategien hielten den Batterieladestand (SoC) am Zyklusende aufrecht und bestätigten damit die Praxistauglichkeit und ladungserhaltende Wirkung.</span></li>
+        </ul>
+        <div class="p-result"><span data-li="en" class="on">Up to 35.9% fuel reduction via Dynamic Programming · 1st place at RPTU Kaiserslautern</span><span data-li="de">Bis zu 35,9% Kraftstoffreduktion via DP · 1. Platz an der RPTU Kaiserslautern</span></div>
+        <div style="margin-top:.85rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center">
+          <span onclick="openModal('🏆 Energy Management Competition — Award','assets/proof/energy_management_award.jpg')"
+            style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.75rem;font-weight:600;color:var(--gold);border:1px solid rgba(255,209,102,.3);border-radius:50px;padding:5px 14px;background:rgba(255,209,102,.07);transition:.25s"
+            onmouseover="this.style.background='rgba(255,209,102,.16)';this.style.borderColor='rgba(255,209,102,.6)'"
+            onmouseout="this.style.background='rgba(255,209,102,.07)';this.style.borderColor='rgba(255,209,102,.3)'">
+            <i class="fa fa-trophy"></i>
+            <span data-li="en" class="on">View Award Certificate</span>
+            <span data-li="de">Auszeichnung ansehen</span>
+          </span>
+          <a href="https://github.com/Rahul-Chid/Fuel_Consumption_Optimization_using_MATLAB_Simulink.git" target="_blank"
+            style="display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:600;color:var(--text);border:1px solid var(--border);border-radius:50px;padding:5px 14px;background:rgba(255,255,255,.04);text-decoration:none;transition:.25s"
+            onmouseover="this.style.background='rgba(255,255,255,.1)';this.style.borderColor='rgba(255,255,255,.2)'"
+            onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.borderColor='var(--border)'">
+            <i class="fab fa-github"></i> GitHub
+          </a>
+        </div>
+      </div>
+
+      <!-- Bachelor Thesis — updated title & date -->
+      <div class="p-card reveal">
+        <div class="p-icon" style="background:linear-gradient(135deg,rgba(255,123,123,.12),rgba(255,209,102,.08));color:var(--coral)"><i class="fa fa-robot"></i></div>
+        <div class="p-badge" style="background:rgba(255,123,123,.1);color:var(--coral);border:1px solid rgba(255,123,123,.2)">
+          <span data-li="en" class="on">Bachelor's Thesis · Nov 2020 – Apr 2021</span><span data-li="de">Bachelorarbeit · Nov 2020 – Apr 2021</span>
+        </div>
+        <div class="p-title"><span data-l="en" class="on">Robotic Forearm Integrated with Leap Motion Controller</span><span data-l="de">Roboterarm integriert mit Leap Motion Controller</span></div>
+        <ul class="blist">
+          <li><span data-l="en" class="on">Designed and manufactured a humanoid robotic forearm based on the INMOOV Arm using Additive Manufacturing with ABS polymer, significantly reducing manufacturing cost and overall weight.</span><span data-l="de">Entwurf und Fertigung eines humanoiden Roboterarms auf Basis des INMOOV-Arms mittels additiver Fertigung (ABS-Polymer) — deutliche Reduzierung von Fertigungskosten und Gesamtgewicht.</span></li>
+          <li><span data-l="en" class="on">Integrated a Leap Motion Controller (2 cameras, 3 IR LEDs) to capture and replicate human hand gestures — enabling Flexion, Extension and Rotation movements via a cable-driven mechanism with servo motors.</span><span data-l="de">Integration eines Leap Motion Controllers (2 Kameras, 3 IR-LEDs) zur Erfassung und Replikation menschlicher Handgesten — ermöglicht Flexion, Extension und Rotation über einen kabelbetriebenen Mechanismus mit Servomotoren.</span></li>
+          <li><span data-l="en" class="on">Programmed the gesture-replication interface in the Processing platform; targeted applications include handling hazardous chemicals and use as an industrial robotic end-effector.</span><span data-l="de">Programmierung der Gesten-Replikationsschnittstelle in der Processing-Plattform; Anwendungen umfassen den Umgang mit Gefahrstoffen und den Einsatz als industrieller Roboter-Endeffektor.</span></li>
+        </ul>
+      </div>
+
+      <!-- DTMF Robot -->
+      <div class="p-card reveal">
+        <div class="p-icon" style="background:linear-gradient(135deg,rgba(123,97,255,.15),rgba(0,212,255,.08));color:var(--b)"><i class="fa fa-mobile-alt"></i></div>
+        <div class="p-badge" style="background:rgba(123,97,255,.1);color:var(--b);border:1px solid rgba(123,97,255,.2)">
+          <span data-li="en" class="on">🥉 3rd Place · Sep 2018</span><span data-li="de">🥉 3. Platz · Sep 2018</span>
+        </div>
+        <div class="p-title"><span data-l="en" class="on">Dual Tone Multi-Frequency (DTMF) Robot</span><span data-l="de">Dual-Tone-Multi-Frequency (DTMF) Roboter</span></div>
+        <ul class="blist">
+          <li><span data-l="en" class="on">Robotic vehicle controlled via mobile phone DTMF signals, designed for enhanced surveillance operations.</span><span data-l="de">Über DTMF-Handysignale steuerbares Roboterfahrzeug für Überwachungsanwendungen.</span></li>
+          <li><span data-l="en" class="on">Presented at the National Level Technical Symposium "Ignition-2k18", awarded 3rd place.</span><span data-l="de">Präsentiert beim nationalen technischen Symposium „Ignition-2k18" — 3. Platz.</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SKILLS ═══════════ -->
+<section id="skills" class="bg-alt">
+  <div class="si">
+    <p class="s-label reveal"><span data-li="en" class="on">Expertise</span><span data-li="de">Fachkompetenz</span></p>
+    <h2 class="s-title reveal"><span data-li="en" class="on">Skills &amp; <em>Tools</em></span><span data-li="de">Kompetenzen &amp; <em>Werkzeuge</em></span></h2>
+    <div class="s-div reveal"></div>
+    <div class="skill-section-grid reveal" id="skill-section">
+      <!-- ── COL 1 ── -->
+      <div>
+        <div class="skill-cat-title"><i class="fa fa-vial"></i><span data-li="en" class="on">Testing &amp; Validation</span><span data-li="de">Test &amp; Validierung</span></div>
+        <div class="skill-items">
+          <div class="skill-row"><span class="skill-row-name"><span data-li="en" class="on">Functional &amp; System Testing</span><span data-li="de">Funktions- &amp; Systemtest</span></span><div class="skill-dots"><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name">NVH &amp; Acoustic Testing</span><div class="skill-dots"><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name"><span data-li="en" class="on">Thermal &amp; Lifetime Tests</span><span data-li="de">Thermische &amp; Dauerlauftests</span></span><div class="skill-dots"><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name">DVP&amp;R Documentation</span><div class="skill-dots"><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot"></div></div></div>
+        </div>
+
+        <div class="skill-cat-title" style="margin-top:1.75rem"><i class="fa fa-code"></i><span data-li="en" class="on">Simulation &amp; Programming</span><span data-li="de">Simulation &amp; Programmierung</span></div>
+        <div class="skill-items">
+          <div class="skill-row"><span class="skill-row-name">MATLAB / Simulink</span><div class="skill-dots"><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name">Python</span><div class="skill-dots"><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name">C Programming</span><div class="skill-dots"><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot"></div><div class="dot"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name">PLC / Ladder Programming</span><div class="skill-dots"><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot"></div><div class="dot"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name">JMAG (EM Simulation)</span><div class="skill-dots"><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name">GitHub / GitLab / SVN</span><div class="skill-dots"><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot"></div><div class="dot"></div></div></div>
+        </div>
+
+        <div class="skill-cat-title" style="margin-top:1.75rem"><i class="fa fa-tools"></i><span data-li="en" class="on">Office, CAD &amp; Documentation</span><span data-li="de">Office, CAD &amp; Dokumentation</span></div>
+        <div class="skill-items">
+          <div class="skill-row"><span class="skill-row-name">Microsoft Word / Excel / PowerPoint</span><div class="skill-dots"><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name">Solidworks (CAD)</span><div class="skill-dots"><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot"></div><div class="dot"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name">LaTeX</span><div class="skill-dots"><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── COL 2 ── -->
+      <div>
+        <div class="skill-cat-title"><i class="fa fa-microchip"></i><span data-li="en" class="on">Motors &amp; Drive Systems</span><span data-li="de">Motoren &amp; Antriebssysteme</span></div>
+        <div class="skill-items">
+          <div class="skill-row"><span class="skill-row-name">BLDC / PMSM / DC Motors</span><div class="skill-dots"><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name"><span data-li="en" class="on">FOC (Sensor &amp; Sensorless)</span><span data-li="de">FOC (sensorbasiert &amp; sensorlos)</span></span><div class="skill-dots"><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name"><span data-li="en" class="on">12V &amp; 48V Architectures</span><span data-li="de">12V &amp; 48V Architekturen</span></span><div class="skill-dots"><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name"><span data-li="en" class="on">Axial Flux Machines</span><span data-li="de">Axialflussmaschinen</span></span><div class="skill-dots"><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot"></div><div class="dot"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name"><span data-li="en" class="on">Clutch Systems</span><span data-li="de">Kupplungssysteme</span></span><div class="skill-dots"><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot"></div></div></div>
+        </div>
+
+        <div class="skill-cat-title" style="margin-top:1.75rem"><i class="fa fa-network-wired"></i><span data-li="en" class="on">Automotive Bus &amp; ECU</span><span data-li="de">Automotive Bus &amp; ECU</span></div>
+        <div class="skill-items">
+          <div class="skill-row"><span class="skill-row-name">Vector CANoe / CAPL</span><div class="skill-dots"><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name">CAN / LIN</span><div class="skill-dots"><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name"><span data-li="en" class="on">ECU Flashing — Renesas Programmer</span><span data-li="de">ECU-Flashing — Renesas Programmer</span></span><div class="skill-dots"><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot"></div></div></div>
+        </div>
+
+        <div class="skill-cat-title" style="margin-top:1.75rem"><i class="fa fa-cogs"></i><span data-li="en" class="on">Systems Knowledge</span><span data-li="de">Systemkenntnisse</span></div>
+        <div class="skill-items">
+          <div class="skill-row"><span class="skill-row-name"><span data-li="en" class="on">Roof &amp; Sunroof Systems</span><span data-li="de">Dach- &amp; Schiebedachsysteme</span></span><div class="skill-dots"><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div><div class="dot on pro"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name"><span data-li="en" class="on">Pneumatics</span><span data-li="de">Pneumatik</span></span><div class="skill-dots"><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot"></div><div class="dot"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name"><span data-li="en" class="on">Robotics &amp; Actuation</span><span data-li="de">Robotik &amp; Aktorik</span></span><div class="skill-dots"><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot"></div><div class="dot"></div></div></div>
+          <div class="skill-row"><span class="skill-row-name">Additive Manufacturing / Carbon Fiber</span><div class="skill-dots"><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot on alt"></div><div class="dot"></div><div class="dot"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── E-MOTOR TESTING SECTION ── -->
+    <div style="margin-top:2.5rem" class="reveal">
+      <div class="skill-cat-title" style="font-size:.75rem;margin-bottom:1.1rem"><i class="fa fa-bolt"></i><span data-li="en" class="on">E-Motor Specific Tests &amp; Measurements</span><span data-li="de">E-Motor spezifische Tests &amp; Messungen</span></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:.75rem">
+        <div class="skill-row" style="flex-direction:column;align-items:flex-start;gap:.3rem;padding:.75rem 1rem">
+          <span style="font-size:.75rem;font-weight:700;color:var(--gold);letter-spacing:.04em">Back-EMF Analysis</span>
+          <span style="font-size:.75rem;color:var(--muted)"><span data-li="en" class="on">Waveform analysis of back-EMF for motor characterization</span><span data-li="de">Wellenformanalyse der Gegen-EMK zur Motorcharakterisierung</span></span>
+        </div>
+        <div class="skill-row" style="flex-direction:column;align-items:flex-start;gap:.3rem;padding:.75rem 1rem">
+          <span style="font-size:.75rem;font-weight:700;color:var(--gold);letter-spacing:.04em">FFT Harmonic Analysis</span>
+          <span style="font-size:.75rem;color:var(--muted)"><span data-li="en" class="on">Frequency-domain analysis of current &amp; back-EMF harmonics</span><span data-li="de">Frequenzbereichsanalyse von Strom- und Gegen-EMK-Oberwellen</span></span>
+        </div>
+        <div class="skill-row" style="flex-direction:column;align-items:flex-start;gap:.3rem;padding:.75rem 1rem">
+          <span style="font-size:.75rem;font-weight:700;color:var(--gold);letter-spacing:.04em">Cogging Torque Analysis</span>
+          <span style="font-size:.75rem;color:var(--muted)"><span data-li="en" class="on">Measurement and evaluation of cogging torque behavior</span><span data-li="de">Messung und Auswertung des Rastmoments</span></span>
+        </div>
+        <div class="skill-row" style="flex-direction:column;align-items:flex-start;gap:.3rem;padding:.75rem 1rem">
+          <span style="font-size:.75rem;font-weight:700;color:var(--gold);letter-spacing:.04em">Characteristic Curve Measurement</span>
+          <span style="font-size:.75rem;color:var(--muted)"><span data-li="en" class="on">Speed-torque, efficiency &amp; power characteristic mapping</span><span data-li="de">Drehzahl-Drehmoment-, Effizienz- und Leistungskennlinien</span></span>
+        </div>
+        <div class="skill-row" style="flex-direction:column;align-items:flex-start;gap:.3rem;padding:.75rem 1rem">
+          <span style="font-size:.75rem;font-weight:700;color:var(--gold);letter-spacing:.04em">Flux Map Measurement</span>
+          <span style="font-size:.75rem;color:var(--muted)"><span data-li="en" class="on">Magnetic saturation analysis via flux mapping</span><span data-li="de">Magnetische Sättigungsanalyse mittels Flusskartierung</span></span>
+        </div>
+        <div class="skill-row" style="flex-direction:column;align-items:flex-start;gap:.3rem;padding:.75rem 1rem">
+          <span style="font-size:.75rem;font-weight:700;color:var(--gold);letter-spacing:.04em">Rotor Flux Measurement</span>
+          <span style="font-size:.75rem;color:var(--muted)"><span data-li="en" class="on">Rotor flux characterization using Senis System (MMS-2A-ROT)</span><span data-li="de">Rotorflusscharakterisierung mit Senis-System (MMS-2A-ROT)</span></span>
+        </div>
+        <div class="skill-row" style="flex-direction:column;align-items:flex-start;gap:.3rem;padding:.75rem 1rem">
+          <span style="font-size:.75rem;font-weight:700;color:var(--gold);letter-spacing:.04em">Hall Sensor Analysis</span>
+          <span style="font-size:.75rem;color:var(--muted)"><span data-li="en" class="on">Hall sensor signal evaluation for commutation &amp; position sensing</span><span data-li="de">Auswertung von Hall-Sensorsignalen für Kommutierung und Positionserfassung</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TEST SYSTEMS & SOFTWARE ── -->
+    <div style="margin-top:2.5rem" class="reveal">
+      <div class="skill-cat-title" style="font-size:.75rem;margin-bottom:1.1rem"><i class="fa fa-server"></i><span data-li="en" class="on">Motor Test Systems &amp; Software</span><span data-li="de">Motor-Testsysteme &amp; Software</span></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:.75rem">
+        <div class="skill-row" style="align-items:flex-start;flex-direction:column;gap:.3rem;padding:.75rem 1rem">
+          <span style="font-size:.75rem;font-weight:700;color:var(--a)">Magtrol Brake System</span>
+          <span style="font-size:.73rem;color:var(--muted)"><span data-li="en" class="on">Characteristic curve &amp; performance analysis</span><span data-li="de">Kennlinien- und Leistungsanalyse</span></span>
+          <span style="font-size:.7rem;color:var(--b);margin-top:.15rem">SW: MTEST</span>
+        </div>
+        <div class="skill-row" style="align-items:flex-start;flex-direction:column;gap:.3rem;padding:.75rem 1rem">
+          <span style="font-size:.75rem;font-weight:700;color:var(--a)">Senis System</span>
+          <span style="font-size:.73rem;color:var(--muted)"><span data-li="en" class="on">Rotor flux measurement &amp; magnetic field analysis</span><span data-li="de">Rotorflussmessung &amp; Magnetfeldanalyse</span></span>
+          <span style="font-size:.7rem;color:var(--b);margin-top:.15rem">SW: MMS-2A-ROT</span>
+        </div>
+        <div class="skill-row" style="align-items:flex-start;flex-direction:column;gap:.3rem;padding:.75rem 1rem">
+          <span style="font-size:.75rem;font-weight:700;color:var(--a)">Maxon Speed Control System</span>
+          <span style="font-size:.73rem;color:var(--muted)"><span data-li="en" class="on">Speed control &amp; motor drive configuration</span><span data-li="de">Drehzahlregelung &amp; Motorantriebskonfiguration</span></span>
+          <span style="font-size:.7rem;color:var(--b);margin-top:.15rem">SW: EPOS Studio</span>
+        </div>
+        <div class="skill-row" style="align-items:flex-start;flex-direction:column;gap:.3rem;padding:.75rem 1rem">
+          <span style="font-size:.75rem;font-weight:700;color:var(--a)">dSPACE Prototyping System</span>
+          <span style="font-size:.73rem;color:var(--muted)"><span data-li="en" class="on">Rapid control prototyping &amp; HIL testing</span><span data-li="de">Rapid-Control-Prototyping &amp; HIL-Tests</span></span>
+          <span style="font-size:.7rem;color:var(--b);margin-top:.15rem">SW: ControlDesk, ConfigurationDesk</span>
+        </div>
+        <div class="skill-row" style="align-items:flex-start;flex-direction:column;gap:.3rem;padding:.75rem 1rem">
+          <span style="font-size:.75rem;font-weight:700;color:var(--a)">Renesas Flash Tool</span>
+          <span style="font-size:.73rem;color:var(--muted)"><span data-li="en" class="on">ECU software flashing for motor control MCUs</span><span data-li="de">ECU-Software-Flashing für Motorsteuerungs-MCUs</span></span>
+          <span style="font-size:.7rem;color:var(--b);margin-top:.15rem">SW: Renesas Programmer</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LAB INSTRUMENTS ── -->
+    <div style="margin-top:2.5rem" class="reveal">
+      <div class="skill-cat-title" style="font-size:.75rem;margin-bottom:1.1rem"><i class="fa fa-flask"></i><span data-li="en" class="on">Lab Instruments &amp; Hardware Tools</span><span data-li="de">Laborinstrumente &amp; Hardware-Tools</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:.6rem">
+        <span class="tag" style="font-size:.8rem;padding:6px 14px">🔧 Soldering</span>
+        <span class="tag" style="font-size:.8rem;padding:6px 14px">📏 Multimeter</span>
+        <span class="tag" style="font-size:.8rem;padding:6px 14px">📡 Oscilloscope</span>
+        <span class="tag" style="font-size:.8rem;padding:6px 14px">🔁 Current Probe</span>
+        <span class="tag" style="font-size:.8rem;padding:6px 14px">⚡ Voltage Probe</span>
+        <span class="tag" style="font-size:.8rem;padding:6px 14px">🧲 Hall Probe</span>
+        <span class="tag" style="font-size:.8rem;padding:6px 14px">📊 Power Analyzer</span>
+        <span class="tag" style="font-size:.8rem;padding:6px 14px">🔌 Signal Generator</span>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="reveal" style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-top:1.75rem;padding:.75rem 1rem;background:var(--card);border:1px solid var(--border);border-radius:10px;width:fit-content">
+      <span style="font-size:.72rem;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase"><span data-li="en" class="on">Level</span><span data-li="de">Niveau</span></span>
+      <div style="display:flex;align-items:center;gap:6px"><div class="dot on pro" style="width:10px;height:10px"></div><div class="dot on pro" style="width:10px;height:10px"></div><div class="dot on pro" style="width:10px;height:10px"></div><div class="dot on pro" style="width:10px;height:10px"></div><div class="dot on pro" style="width:10px;height:10px"></div><span style="font-size:.75rem;color:var(--text);margin-left:4px"><span data-li="en" class="on">Expert</span><span data-li="de">Experte</span></span></div>
+      <div style="display:flex;align-items:center;gap:6px"><div class="dot on alt" style="width:10px;height:10px"></div><div class="dot on alt" style="width:10px;height:10px"></div><div class="dot on alt" style="width:10px;height:10px"></div><div class="dot on alt" style="width:10px;height:10px"></div><div class="dot" style="width:10px;height:10px"></div><span style="font-size:.75rem;color:var(--text);margin-left:4px"><span data-li="en" class="on">Proficient</span><span data-li="de">Versiert</span></span></div>
+      <div style="display:flex;align-items:center;gap:6px"><div class="dot on alt" style="width:10px;height:10px"></div><div class="dot on alt" style="width:10px;height:10px"></div><div class="dot on alt" style="width:10px;height:10px"></div><div class="dot" style="width:10px;height:10px"></div><div class="dot" style="width:10px;height:10px"></div><span style="font-size:.75rem;color:var(--text);margin-left:4px"><span data-li="en" class="on">Familiar</span><span data-li="de">Vertraut</span></span></div>
+    </div>
+
+    <!-- Certifications — with proof modals -->
+    <div style="margin-top:2.5rem" class="reveal">
+      <div class="tags-title"><span data-li="en" class="on">Certifications</span><span data-li="de">Zertifizierungen</span></div>
+      <div class="cert-wrap">
+        <span class="cert-pill" onclick="openModal('MATLAB Onramp','assets/proof/MATLAB_onramp.jpg')"><i class="fa fa-certificate"></i> MATLAB Onramp</span>
+        <span class="cert-pill" onclick="openModal('Simulink Onramp','assets/proof/Simulink_onramp.jpg')"><i class="fa fa-certificate"></i> Simulink Onramp</span>
+        <span class="cert-pill" onclick="openModal('Intro to Programming with MATLAB','assets/proof/Intro_to_matlab_prog.jpg')"><i class="fa fa-certificate"></i> <span data-li="en" class="on">Intro to MATLAB Programming</span><span data-li="de">Einführung in MATLAB</span></span>
+        <span class="cert-pill" onclick="openModal('Solidworks CSWA','assets/proof/Solidworks_CSWA.jpg')"><i class="fa fa-certificate"></i> Solidworks (CSWA)</span>
+        <span class="cert-pill" onclick="openModal('Intro to Basic Vibrations','assets/proof/into_to_basic_vibrations.jpg')"><i class="fa fa-certificate"></i> <span data-li="en" class="on">Intro to Basic Vibrations</span><span data-li="de">Grundlagen Schwingungen</span></span>
+        <span class="cert-pill" onclick="openModal('Digital Manufacturing and Design','assets/proof/Digital_mfg_and_design.jpg')"><i class="fa fa-certificate"></i> <span data-li="en" class="on">Digital Manufacturing &amp; Design</span><span data-li="de">Digitale Fertigung &amp; Design</span></span>
+        <span class="cert-pill" onclick="openModal('Digital Threads: Components','assets/proof/Digital_threads_components.jpg')"><i class="fa fa-certificate"></i> Digital Threads</span>
+        <span class="cert-pill" onclick="openModal('Python Data Structures','assets/proof/python_data_structures.jpg')"><i class="fa fa-certificate"></i> Python Data Structures</span>
+      </div>
+    </div>
+
+    <!-- Languages spoken -->
+    <div class="reveal">
+      <div class="tags-title" style="margin-top:2rem"><span data-li="en" class="on">Languages</span><span data-li="de">Sprachen</span></div>
+      <div class="lang-spoken">
+        <div class="lp"><span class="lp-flag">🇬🇧</span><span class="lp-name">English</span><span class="lp-lvl">C1</span></div>
+        <div class="lp"><span class="lp-flag">🇩🇪</span><span class="lp-name">Deutsch</span><span class="lp-lvl">B2</span></div>
+        <div class="lp"><span class="lp-flag">🇮🇳</span><span class="lp-name">Tamil</span><span class="lp-lvl"><span data-li="en" class="on">Native</span><span data-li="de">Muttersprache</span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ EDUCATION ═══════════ -->
+<section id="education">
+  <div class="si">
+    <p class="s-label reveal"><span data-li="en" class="on">Academic</span><span data-li="de">Akademisch</span></p>
+    <h2 class="s-title reveal"><span data-li="en" class="on"><em>Education</em></span><span data-li="de"><em>Ausbildung</em></span></h2>
+    <div class="s-div reveal"></div>
+    <div class="edu-grid">
+      <div class="e-card reveal">
+        <div class="e-badge">M.Sc.</div>
+        <div class="e-degree"><span data-l="en" class="on">Master of Science — Automotive Engineering</span><span data-l="de">Master of Science — Fahrzeugtechnik</span></div>
+        <div class="e-focus"><span data-li="en" class="on">Focus: Electric Drive Technology</span><span data-li="de">Fokus: Elektrische Antriebstechnik</span></div>
+        <div class="e-school">RPTU Kaiserslautern-Landau, Deutschland</div>
+        <div class="e-date">Oct 2022 – Mar 2026</div>
+      </div>
+      <div class="e-card reveal">
+        <div class="e-badge">B.E.</div>
+        <div class="e-degree"><span data-l="en" class="on">Bachelor of Engineering — Mechanical Engineering</span><span data-l="de">Bachelor of Engineering — Maschinenbau</span></div>
+        <div class="e-focus"><span data-li="en" class="on">Focus: Mechatronic Systems</span><span data-li="de">Fokus: Mechatronische Systeme</span></div>
+        <div class="e-school">Anna University, Chennai, India</div>
+        <div class="e-date">Aug 2017 – Apr 2021</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ RESEARCH — Publications + Conferences ═══════════ -->
+<section id="research" class="bg-alt">
+  <div class="si">
+    <p class="s-label reveal"><span data-li="en" class="on">Research &amp; Presentations</span><span data-li="de">Forschung &amp; Präsentationen</span></p>
+    <h2 class="s-title reveal"><span data-li="en" class="on">Publications, Patents <em>&amp; Conferences</em></span><span data-li="de">Publikationen, Patente <em>&amp; Konferenzen</em></span></h2>
+    <div class="s-div reveal"></div>
+
+    <!-- ── PUBLICATIONS ── -->
+    <h3 class="reveal" style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--a);margin-bottom:1.25rem;letter-spacing:.02em">
+      <i class="fa fa-book-open" style="margin-right:8px;font-size:.9rem"></i>
+      <span data-li="en" class="on">Publications &amp; Patents</span><span data-li="de">Publikationen &amp; Patente</span>
+    </h3>
+    <div class="pub-list" style="margin-bottom:3rem">
+
+      <!-- Springer -->
+      <div class="pub-card reveal">
+        <div class="pub-icon" style="background:rgba(0,212,255,.1);color:var(--a)"><i class="fa fa-book"></i></div>
+        <div style="flex:1">
+          <div class="pub-title"><span data-li="en" class="on">Free Vibration Study on Woven Fabric Carbon Epoxy Laminate Plied with Neoprene Rubber</span><span data-li="de">Freie Schwingungsuntersuchung an Kohlenstoff-Epoxid-Gewebe-Laminat mit Neoprenkautschuk</span></div>
+          <div class="pub-meta">Dr. Ramesh Rajagopal, Rahul Chidambaranathan · <em>Recent Advances in Materials Technologies</em>, Lecture Notes in Mechanical Engineering, Springer, Singapore, pp. 387–396.</div>
+          <div class="pub-footer">
+            <span class="pub-year">Sep 2022 · Springer</span>
+            <a class="pub-link" href="https://link.springer.com/chapter/10.1007/978-981-19-3895-5_30" target="_blank"><i class="fa fa-external-link-alt"></i> <span data-li="en" class="on">View Paper</span><span data-li="de">Publikation ansehen</span></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- RPTU Scientific Writing (unofficial) -->
+      <div class="pub-card reveal">
+        <div class="pub-icon" style="background:rgba(0,255,179,.1);color:var(--c)"><i class="fa fa-flask"></i></div>
+        <div style="flex:1">
+          <div class="pub-title"><span data-li="en" class="on">Exploring the Future of Commercial Vehicle Electrification: A Comparative Analysis of Battery Technologies</span><span data-li="de">Die Zukunft der Nutzfahrzeugelektrifizierung: Eine Vergleichsanalyse von Batterietechnologien</span></div>
+          <div class="pub-meta"><span data-li="en" class="on">Rahul Chidambaranathan · Scientific Writing and Publishing — RPTU Kaiserslautern-Landau. <em>Academic course paper; not officially peer-reviewed.</em></span><span data-li="de">Rahul Chidambaranathan · Wissenschaftliches Schreiben und Publizieren — RPTU Kaiserslautern-Landau. <em>Akademische Hausarbeit; nicht offiziell begutachtet.</em></span></div>
+          <div class="pub-footer">
+            <span class="pub-year" style="background:rgba(0,255,179,.08);color:var(--c);border-color:rgba(0,255,179,.2)">RPTU · <span data-li="en" class="on">Academic Paper</span><span data-li="de">Akademische Arbeit</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- IRJET -->
+      <div class="pub-card reveal">
+        <div class="pub-icon" style="background:rgba(123,97,255,.1);color:var(--b)"><i class="fa fa-file-alt"></i></div>
+        <div style="flex:1">
+          <div class="pub-title"><span data-li="en" class="on">Implementation of Automated Pneumatic Bumper in a Mining Cart</span><span data-li="de">Implementierung eines automatisierten Druckluft-Stoßdämpfers in einem Minenwagen</span></div>
+          <div class="pub-meta">Rahul Chidambaranathan, Sambath Kumar, Shresht Rammohan · <em>IRJET</em>, Vol. 07, Issue 08, pp. 351–354.</div>
+          <div class="pub-footer">
+            <span class="pub-year">Aug 2020 · IRJET</span>
+            <a class="pub-link" href="https://www.irjet.net/archives/V7/i8/IRJET-V7I856.pdf" target="_blank"><i class="fa fa-external-link-alt"></i> <span data-li="en" class="on">View Paper</span><span data-li="de">Publikation ansehen</span></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patent -->
+      <div class="pub-card reveal">
+        <div class="pub-icon" style="background:rgba(255,209,102,.1);color:var(--gold)"><i class="fa fa-shield-alt"></i></div>
+        <div style="flex:1">
+          <div class="pub-title">Firefly – Virtual Fireman <span style="font-size:.75rem;color:var(--gold);font-weight:700;margin-left:6px">(Patent Filed)</span></div>
+          <div class="pub-meta">Rahul Chidambaranathan · Intellectual Property India · Filing No: 202014053067</div>
+          <div class="pub-footer">
+            <span class="pub-year">Dec 2020 · <span data-li="en" class="on">Patent</span><span data-li="de">Patent</span></span>
+            <span class="pub-link gold" onclick="openModal('Patent — Firefly Virtual Fireman','assets/proof/Patent_filing_proof.jpg')" style="cursor:pointer"><i class="fa fa-id-card"></i> <span data-li="en" class="on">View Filing</span><span data-li="de">Einreichung ansehen</span></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── CONFERENCES ── -->
+    <h3 class="reveal" style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--b);margin-bottom:1.25rem;letter-spacing:.02em">
+      <i class="fa fa-microphone-alt" style="margin-right:8px;font-size:.9rem"></i>
+      <span data-li="en" class="on">Conferences &amp; Presentations</span><span data-li="de">Konferenzen &amp; Präsentationen</span>
+    </h3>
+    <div class="conf-list">
+
+      <!-- Global Roof Mechatronics 2025 (internal Webasto) -->
+      <div class="conf-card reveal">
+        <div class="conf-icon" style="background:rgba(123,97,255,.1);color:var(--b)"><i class="fa fa-globe"></i></div>
+        <div style="flex:1">
+          <div class="conf-title"><span data-li="en" class="on">Global Roof Mechatronics Conference 2025</span><span data-li="de">Globale Roof Mechatronics Konferenz 2025</span></div>
+          <div class="conf-meta">
+            <span data-li="en" class="on">Internal innovation conference at Webasto Group. Presented new innovation concepts and prototypes collaborating with teams from <strong style="color:var(--text)">Europe, India, USA, China and Korea</strong>.</span>
+            <span data-li="de">Interne Innovationskonferenz bei der Webasto Group. Präsentation neuer Innovationskonzepte und Prototypen in Zusammenarbeit mit Teams aus <strong style="color:var(--text)">Europa, Indien, USA, China und Korea</strong>.</span>
+          </div>
+          <div class="conf-footer">
+            <span class="conf-year">2025</span>
+            <span class="conf-badge"><span data-li="en" class="on">🏢 Internal · Webasto</span><span data-li="de">🏢 Intern · Webasto</span></span>
+            <span class="conf-badge" style="background:rgba(0,212,255,.07);color:var(--a);border-color:rgba(0,212,255,.2)">🌍 <span data-li="en" class="on">International Teams</span><span data-li="de">Internationale Teams</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Global Roof Mechatronics 2024 (internal Webasto) -->
+      <div class="conf-card reveal">
+        <div class="conf-icon" style="background:rgba(123,97,255,.1);color:var(--b)"><i class="fa fa-globe"></i></div>
+        <div style="flex:1">
+          <div class="conf-title"><span data-li="en" class="on">Global Roof Mechatronics Conference 2024</span><span data-li="de">Globale Roof Mechatronics Konferenz 2024</span></div>
+          <div class="conf-meta">
+            <span data-li="en" class="on">Internal innovation conference at Webasto Group. Presented innovation concepts and drive system prototypes; collaborated with global teams from <strong style="color:var(--text)">Europe, India, USA, China and Korea</strong>.</span>
+            <span data-li="de">Interne Innovationskonferenz bei der Webasto Group. Präsentation von Innovationskonzepten und Antriebsprototypen; Zusammenarbeit mit globalen Teams aus <strong style="color:var(--text)">Europa, Indien, USA, China und Korea</strong>.</span>
+          </div>
+          <div class="conf-footer">
+            <span class="conf-year">2024</span>
+            <span class="conf-badge"><span data-li="en" class="on">🏢 Internal · Webasto</span><span data-li="de">🏢 Intern · Webasto</span></span>
+            <span class="conf-badge" style="background:rgba(0,212,255,.07);color:var(--a);border-color:rgba(0,212,255,.2)">🌍 <span data-li="en" class="on">International Teams</span><span data-li="de">Internationale Teams</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ICEMT 2021 (with proof) -->
+      <div class="conf-card reveal">
+        <div class="conf-icon" style="background:rgba(0,212,255,.1);color:var(--a)"><i class="fa fa-university"></i></div>
+        <div style="flex:1">
+          <div class="conf-title"><span data-li="en" class="on">International Conference on Energy and Materials Technologies (ICEMT)</span><span data-li="de">Internationale Konferenz für Energie- und Materialtechnologien (ICEMT)</span></div>
+          <div class="conf-meta">
+            <span data-li="en" class="on">Presented the manuscript <em>"Free Vibration Study on Woven Fabric Carbon Epoxy Laminate Plied with Neoprene Rubber Using Impulse Hammer Technique."</em></span>
+            <span data-li="de">Präsentation des Manuskripts <em>„Freie Schwingungsuntersuchung an Kohlenstoff-Epoxid-Gewebe-Laminat mit Neoprenkautschuk mittels Impulshammertechnik."</em></span>
+          </div>
+          <div class="conf-footer">
+            <span class="conf-year">Aug 2021</span>
+            <span class="conf-badge" style="background:rgba(0,212,255,.07);color:var(--a);border-color:rgba(0,212,255,.2)"><span data-li="en" class="on">🌐 International Conference</span><span data-li="de">🌐 Internationale Konferenz</span></span>
+            <span class="pub-link" onclick="openModal('ICEMT — Conference Proof','assets/proof/ICEMT_conference_proof.jpg')" style="cursor:pointer"><i class="fa fa-id-card"></i> <span data-li="en" class="on">View Proof</span><span data-li="de">Nachweis ansehen</span></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ AWARDS ═══════════ -->
+<section id="awards">
+  <div class="si">
+    <p class="s-label reveal"><span data-li="en" class="on">Recognition</span><span data-li="de">Anerkennung</span></p>
+    <h2 class="s-title reveal"><span data-li="en" class="on">Awards &amp; <em>Achievements</em></span><span data-li="de">Auszeichnungen &amp; <em>Erfolge</em></span></h2>
+    <div class="s-div reveal"></div>
+    <div class="awards-grid reveal">
+      <div class="award-card"><span class="award-icon">🏆</span><div><div class="award-title"><span data-li="en" class="on">Energy Management Competition Winner</span><span data-li="de">Sieger Energiemanagement-Wettbewerb</span></div><div class="award-sub">RPTU Kaiserslautern, Germany</div><div class="award-year">2023</div></div></div>
+      <div class="award-card"><span class="award-icon">📜</span><div><div class="award-title"><span data-li="en" class="on">Top 5% — Advances in Welding &amp; Joining Technologies</span><span data-li="de">Top 5% – Füge- &amp; Schweißtechnologien</span></div><div class="award-sub">NPTEL Certification, India</div><div class="award-year">2020</div></div></div>
+      <div class="award-card"><span class="award-icon">🥉</span><div><div class="award-title"><span data-li="en" class="on">3rd Place, Project Display</span><span data-li="de">3. Platz, Projektpräsentation</span></div><div class="award-sub">Ignition-2k18, National Level Symposium</div><div class="award-year">2018</div></div></div>
+      <div class="award-card"><span class="award-icon">🤝</span><div><div class="award-title"><span data-li="en" class="on">Event Organizer</span><span data-li="de">Veranstaltungsorganisator</span></div><div class="award-sub">Ignition-2k19, National Level Symposium</div><div class="award-year">2019</div></div></div>
+      <div class="award-card"><span class="award-icon">🎖️</span><div><div class="award-title"><span data-li="en" class="on">Best Individual Performance</span><span data-li="de">Beste Einzelleistung</span></div><div class="award-sub"><span data-li="en" class="on">Polio Vaccine Campaign, India</span><span data-li="de">Polio-Impfkampagne, Indien</span></div><div class="award-year">2018</div></div></div>
+      <div class="award-card"><span class="award-icon">🌟</span><div><div class="award-title"><span data-li="en" class="on">'A' Level Certificate — NSS Volunteership</span><span data-li="de">Zertifikat 'A' – NSS Ehrenamt</span></div><div class="award-sub">National Service Scheme, India</div><div class="award-year">2017</div></div></div>
+      <div class="award-card"><span class="award-icon">🔴</span><div><div class="award-title"><span data-li="en" class="on">Leadership Award</span><span data-li="de">Führungspreis</span></div><div class="award-sub">Junior Red Cross Primary Level, India</div><div class="award-year">2013</div></div></div>
+    </div>
+
+    <!-- Trainings — with proofs -->
+    <div style="margin-top:3rem">
+      <p class="s-label reveal"><span data-li="en" class="on">Training &amp; Workshops</span><span data-li="de">Trainings &amp; Workshops</span></p>
+      <h3 class="reveal" style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.4rem;color:#fff;margin-bottom:1.75rem"><em style="color:var(--a);font-style:normal"><span data-li="en" class="on">Professional Development</span><span data-li="de">Berufliche Weiterentwicklung</span></em></h3>
+      <div class="training-list reveal">
+        <div class="tr-card">
+          <div style="flex:1">
+            <div class="tr-title"><span data-li="en" class="on">Workshop on Technology Development of E-Vehicles</span><span data-li="de">Workshop zur Technologieentwicklung von Elektrofahrzeugen</span></div>
+            <div class="tr-org">Sri Venkateswara College of Engineering, India</div>
+            <span onclick="openModal('Workshop on Technology Development of E-Vehicles','assets/proof/technology_development_evehicle.jpg')" style="display:inline-flex;align-items:center;gap:6px;margin-top:.6rem;cursor:pointer;font-size:.73rem;font-weight:600;color:var(--a);border:1px solid rgba(0,212,255,.25);border-radius:50px;padding:4px 12px;background:rgba(0,212,255,.06);transition:.25s" onmouseover="this.style.background='rgba(0,212,255,.14)'" onmouseout="this.style.background='rgba(0,212,255,.06)'"><i class="fa fa-certificate"></i> <span data-li="en" class="on">View Certificate</span><span data-li="de">Zertifikat ansehen</span></span>
+          </div>
+          <div class="tr-date">May 2020</div>
+        </div>
+        <div class="tr-card">
+          <div style="flex:1">
+            <div class="tr-title"><span data-li="en" class="on">Practical Training on Automotive Components Overhauling</span><span data-li="de">Praktisches Training zur Überholung von Kfz-Komponenten</span></div>
+            <div class="tr-org">Skyy Rider Institutions, India</div>
+            <span onclick="openModal('Practical Training on Automotive Components Overhauling','assets/proof/automotive_components_overhauling.jpg')" style="display:inline-flex;align-items:center;gap:6px;margin-top:.6rem;cursor:pointer;font-size:.73rem;font-weight:600;color:var(--a);border:1px solid rgba(0,212,255,.25);border-radius:50px;padding:4px 12px;background:rgba(0,212,255,.06);transition:.25s" onmouseover="this.style.background='rgba(0,212,255,.14)'" onmouseout="this.style.background='rgba(0,212,255,.06)'"><i class="fa fa-certificate"></i> <span data-li="en" class="on">View Certificate</span><span data-li="de">Zertifikat ansehen</span></span>
+          </div>
+          <div class="tr-date">Jun 2019</div>
+        </div>
+        <div class="tr-card">
+          <div style="flex:1">
+            <div class="tr-title"><span data-li="en" class="on">Practical Training on Cars and Engines</span><span data-li="de">Praktisches Training zu Automobilen und Motoren</span></div>
+            <div class="tr-org">Goodwin Motors, India</div>
+            <span onclick="openModal('Practical Training on Cars and Engines','assets/proof/practical_training.jpg')" style="display:inline-flex;align-items:center;gap:6px;margin-top:.6rem;cursor:pointer;font-size:.73rem;font-weight:600;color:var(--a);border:1px solid rgba(0,212,255,.25);border-radius:50px;padding:4px 12px;background:rgba(0,212,255,.06);transition:.25s" onmouseover="this.style.background='rgba(0,212,255,.14)'" onmouseout="this.style.background='rgba(0,212,255,.06)'"><i class="fa fa-certificate"></i> <span data-li="en" class="on">View Certificate</span><span data-li="de">Zertifikat ansehen</span></span>
+          </div>
+          <div class="tr-date">May 2019</div>
+        </div>
+        <div class="tr-card">
+          <div style="flex:1">
+            <div class="tr-title"><span data-li="en" class="on">Manufacturing Trainee</span><span data-li="de">Auszubildender in der Fertigung</span></div>
+            <div class="tr-org">Kocon India Private Limited, India</div>
+            <span onclick="openModal('Manufacturing Trainee — Kocon India','assets/proof/Mfg_trainee.jpg')" style="display:inline-flex;align-items:center;gap:6px;margin-top:.6rem;cursor:pointer;font-size:.73rem;font-weight:600;color:var(--a);border:1px solid rgba(0,212,255,.25);border-radius:50px;padding:4px 12px;background:rgba(0,212,255,.06);transition:.25s" onmouseover="this.style.background='rgba(0,212,255,.14)'" onmouseout="this.style.background='rgba(0,212,255,.06)'"><i class="fa fa-certificate"></i> <span data-li="en" class="on">View Certificate</span><span data-li="de">Zertifikat ansehen</span></span>
+          </div>
+          <div class="tr-date">Dec 2018</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CONTACT ═══════════ -->
+<section id="contact" class="bg-alt">
+  <div class="si">
+    <p class="s-label reveal"><span data-li="en" class="on">Get in touch</span><span data-li="de">Kontakt aufnehmen</span></p>
+    <h2 class="s-title reveal"><span data-li="en" class="on">Let's <em>Connect</em></span><span data-li="de">Lass uns <em>verbinden</em></span></h2>
+    <div class="s-div reveal"></div>
+    <div class="contact-grid reveal">
+      <a class="c-card" href="mailto:rahulchidambaranathan@gmail.com">
+        <div class="c-icon"><i class="fa fa-envelope"></i></div>
+        <div><div class="c-label">Email</div><div class="c-val">rahulchidambaranathan@gmail.com</div></div>
+      </a>
+      <a class="c-card" href="tel:+4917685928080">
+        <div class="c-icon"><i class="fa fa-phone"></i></div>
+        <div><div class="c-label"><span data-li="en" class="on">Phone</span><span data-li="de">Telefon</span></div><div class="c-val">+49 176 8592 8080</div></div>
+      </a>
+      <a class="c-card" href="https://www.linkedin.com/in/rahul-chidambaranathan-0777a41aa/" target="_blank">
+        <div class="c-icon"><i class="fab fa-linkedin"></i></div>
+        <div><div class="c-label">LinkedIn</div><div class="c-val">Rahul Chidambaranathan</div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2026 Rahul Chidambaranathan &nbsp;·&nbsp;
+  <span data-li="en" class="on">Crafted with passion · Kaiserslautern, Germany</span>
+  <span data-li="de">Mit Leidenschaft gestaltet · Kaiserslautern, Deutschland</span>
+</footer>
+
+<script>
+/* CURSOR */
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function ar(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(ar)})();
+document.querySelectorAll('a,button,.p-card,.sc,.e-card,.pub-card,.conf-card,.award-card,.tr-card,.skill-row,.cert-pill').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='22px';cur.style.height='22px';cur.style.background='var(--b)';ring.style.width='52px';ring.style.height='52px'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='12px';cur.style.height='12px';cur.style.background='var(--a)';ring.style.width='36px';ring.style.height='36px'});
+});
+
+/* PARTICLES */
+const cv=document.getElementById('bg-canvas'),cx2=cv.getContext('2d');
+let W,H,pts=[];
+function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight}
+resize();window.addEventListener('resize',()=>{resize();init()});
+function init(){pts=[];const n=Math.floor(W*H/16000);for(let i=0;i<n;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.4+.3,o:Math.random()*.35+.08})}
+init();
+function draw(){
+  cx2.clearRect(0,0,W,H);
+  for(let i=0;i<pts.length;i++){
+    const p=pts[i];p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    cx2.beginPath();cx2.arc(p.x,p.y,p.r,0,Math.PI*2);cx2.fillStyle=`rgba(0,212,255,${p.o})`;cx2.fill();
+    for(let j=i+1;j<pts.length;j++){
+      const q=pts[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<110){cx2.beginPath();cx2.moveTo(p.x,p.y);cx2.lineTo(q.x,q.y);cx2.strokeStyle=`rgba(0,212,255,${.07*(1-d/110)})`;cx2.lineWidth=.5;cx2.stroke()}
+    }
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* INTERACTIVE HERO SUMMARY */
+const heroData = {
+  en: {
+    tags: [
+      {label:'3+ Years Experience', cls:'c-a', icon:'fa-briefcase'},
+      {label:'Mechatronic Systems', cls:'c-b', icon:'fa-microchip'},
+      {label:'Development', cls:'c-a', icon:'fa-drafting-compass'},
+      {label:'Testing & Diagnostics', cls:'c-c', icon:'fa-vial'},
+      {label:'Validation', cls:'c-b', icon:'fa-check-double'},
+      {label:'System Integration', cls:'c-g', icon:'fa-project-diagram'},
+      {label:'Performance Optimization', cls:'c-c', icon:'fa-chart-line'},
+      {label:'Problem Solving', cls:'c-a', icon:'fa-lightbulb'},
+    ],
+    sub: 'Specializing in electric drive systems, motor testing, and control strategy development across automotive mechatronic applications.'
+  },
+  de: {
+    tags: [
+      {label:'3+ Jahre Erfahrung', cls:'c-a', icon:'fa-briefcase'},
+      {label:'Mechatronische Systeme', cls:'c-b', icon:'fa-microchip'},
+      {label:'Entwicklung', cls:'c-a', icon:'fa-drafting-compass'},
+      {label:'Test & Diagnose', cls:'c-c', icon:'fa-vial'},
+      {label:'Validierung', cls:'c-b', icon:'fa-check-double'},
+      {label:'Systemintegration', cls:'c-g', icon:'fa-project-diagram'},
+      {label:'Leistungsoptimierung', cls:'c-c', icon:'fa-chart-line'},
+      {label:'Problemlösung', cls:'c-a', icon:'fa-lightbulb'},
+    ],
+    sub: 'Spezialisiert auf elektrische Antriebssysteme, Motortests und Regelstrategieentwicklung in automobilen mechatronischen Anwendungen.'
+  }
+};
+function renderHeroTags(l){
+  const wrap = document.getElementById('hero-tag-line');
+  const sub  = document.getElementById('hero-tagline-sub');
+  if(!wrap||!sub) return;
+  const d = heroData[l];
+  wrap.innerHTML = d.tags.map(t=>`<span class="hero-kw ${t.cls}"><i class="fa ${t.icon}" style="font-size:.65rem"></i>${t.label}</span>`).join('');
+  sub.textContent = d.sub;
+  sub.classList.remove('vis');
+  // stagger tag animation
+  wrap.querySelectorAll('.hero-kw').forEach((el,i)=>{
+    el.style.transitionDelay = (i*70)+'ms';
+    setTimeout(()=>el.classList.add('vis'), 50+i*70);
+  });
+  setTimeout(()=>sub.classList.add('vis'), 100+d.tags.length*70);
+}
+
+
+function setLang(l){
+  document.getElementById('btn-en').classList.toggle('on',l==='en');
+  document.getElementById('btn-de').classList.toggle('on',l==='de');
+  document.querySelectorAll('[data-l]').forEach(e=>e.classList.toggle('on',e.getAttribute('data-l')===l));
+  document.querySelectorAll('[data-li]').forEach(e=>e.classList.toggle('on',e.getAttribute('data-li')===l));
+  document.documentElement.lang=l;
+  renderHeroTags(l);
+}
+setLang('en');
+
+/* EXP TABS */
+function showTab(i){
+  document.querySelectorAll('.exp-tab').forEach((t,j)=>t.classList.toggle('on',j===i));
+  document.querySelectorAll('.exp-pane').forEach((p,j)=>p.classList.toggle('on',j===i));
+}
+
+/* MODAL */
+function openModal(title,imgSrc){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-img').src=imgSrc;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+/* SCROLL REVEAL */
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)}})},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* COUNT UP */
+const cObs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('[data-count]').forEach(el=>{const t=parseFloat(el.getAttribute('data-count')),suf=el.getAttribute('data-suffix')||'',dec=t%1!==0;let c=0,step=t/60;const iv=setInterval(()=>{c+=step;if(c>=t){c=t;clearInterval(iv)}el.textContent=(dec?c.toFixed(1):Math.floor(c))+suf},20)});cObs.unobserve(e.target)}})},{threshold:.3});
+document.querySelectorAll('.stats-row').forEach(r=>cObs.observe(r));
+</script>
+</body>
+</html>
